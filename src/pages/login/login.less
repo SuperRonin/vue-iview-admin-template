@@ -1,0 +1,142 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #175aa8;
+}
+.addColor{
+    color: red;
+}
+.noticetext{
+    color: #ffb45d;
+    font-size: 16px;
+    height: 30px;
+    margin-top: 12px;
+}
+/*登录*/
+.login{
+    width: 100%;
+    height: 100%;
+    // background-image: url('../images/login-bg.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: relative;
+    /*标题*/
+    .title{
+        position: relative;
+        top: 18%;
+        color: #fff;
+        text-align: center;
+        font-size: 50px;
+        .subtitle{
+            font-size: 18px;
+        }
+    }
+    &-con{
+        position: absolute;
+        left: 50%;
+        top: 65%;
+        transform: translate(-50%,-60%);
+        width: 348px;
+        .ivu-card{
+            background: rgba(29, 29, 29, 0);
+        }
+        &-header{
+            font-size: 16px;
+            font-weight: 300;
+            text-align: center;
+            padding: 25px 0;
+        }
+        .form-con{
+            padding: 10px 0 0;
+            // .ivu-input-group-append, .ivu-input-group>.ivu-input:last-child{
+            //     height: 46px;
+            //     line-height: 46px;
+            //     border-radius: 8px!important;
+            // }
+            .username{
+                &::before{
+                    content: '';
+                    display: inline-block;
+                    width: 22px;
+                    height: 22px;
+                    position: relative;
+                    top: 40px;
+                    left: 25px;
+                    z-index: 999;
+                    // background: url('../images/login_user.png');
+                    background-size: 100% 100%;
+                }
+            }
+            .password{
+                &::before{
+                    content: '';
+                    display: inline-block;
+                    width: 22px;
+                    height: 22px;
+                    position: relative;
+                    top: 39px;
+                    left: 25px;
+                    z-index: 999;
+                    // background: url('../images/login-password.png');
+                    background-size: 100% 100%;
+                }
+            }
+            .usercode{
+                &::before{
+                    content: '';
+                    display: inline-block;
+                    width: 22px;
+                    height: 22px;
+                    position: relative;
+                    top: 40px;
+                    left: 25px;
+                    z-index: 999;
+                    // background: url('../images/code.png');
+                    background-size: 100% 100%;
+                }
+            }
+            input{
+                height: 50px;
+                font-size: 18px;
+                line-height: 50px;
+                border-radius: 30px;
+                color: #238ff7;
+                background-color: rgba(255, 255, 255, 0.7)!important;
+                padding-left: 62px;
+                box-sizing: border-box;
+            }
+            .input-group-prepend{
+                display: none;
+            }
+            button{
+                height: 50px;
+                margin-top: 30px;
+                background-color: #fa9520;
+                font-size: 22px;
+                border-radius: 90px;
+            }
+        }
+    }
+}
+
+
+input:-webkit-autofill {
+    // color: #fff!important;
+    // -webkit-box-shadow: 0 0 0 1000px #65bcff inset;
+
+}
+
+::-webkit-input-placeholder { /* WebKit browsers */
+    color:    #65bcff;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:    #65bcff;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    #65bcff;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color:    #65bcff;
+}

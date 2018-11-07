@@ -20,7 +20,7 @@
             <transition-group name="taglist-moving-animation">
                 <Tag
                     type="dot"
-                    v-for="(item, index) in tagsList"
+                    v-for="(item) in tagsList"
                     ref="tagsPageOpened"
                     :key="item.name" 
                     :name="item.name" 
@@ -92,7 +92,7 @@ export default {
             const nextRoute = getNextRoute();
             this.$router.push({name: nextRoute.name});
         },
-        linkTo (item,isClose) {
+        linkTo (item) {
             // 关闭标签页面时，不进行设置iframe操作
             // if(!isClose){
             //     if(item.isFrame == 1){
@@ -113,10 +113,16 @@ export default {
             // if (this.beforePush(item)) {
             //     this.$router.push(routerObj);
             // }
-            
-            if(!isClose){
-                this.$router.push({name: item.name});
+            if(!item.url){
+                this.$store.commit("setIframe",{});
+            }else{
+                this.$store.commit("setIframe",{
+                    name: item.name,
+                    url: item.url
+                });
             }
+            this.$router.push({name: item.name});
+            
         },
         handlescroll (e) {
             var type = e.type;
@@ -178,17 +184,6 @@ export default {
     },
     watch: {
         '$route' (to) {
-            // this.currentPageName = to.name;
-            // this.$nextTick(() => {
-            //     this.refsTag.forEach((item, index) => {
-            //         if (to.name === item.name) {
-            //             let tag = this.refsTag[index].$el;
-            //             this.moveToView(tag);
-            //         }
-            //     });
-            // });
-            // this.tagsCount = this.tagsList.length;
-
             return this.$store.state.app.tagList
         }
     }

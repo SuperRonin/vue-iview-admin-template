@@ -15,7 +15,12 @@ export default {
       tagList: [],
       menuList: [],
       systemList: [],
-      mainMenuList: []
+      mainMenuList: [],
+      iframeObj: {
+        name: "",
+        showIframe: false,
+        iframeList: []
+      }
     },
     getters: {
 
@@ -29,8 +34,14 @@ export default {
         setMainMenuListTolocalStorage(mainMenuList);
         state.mainMenuList = getMainMenuListFromlocalStorage(state.systemList[0]);
       },
-      initMenu (state, serverRouters){
-        state.menuList = getFilterMenuList(routers, serverRouters,state.mainMenuList[0]);
+      /**
+       * obj包含两个参数
+       * @param {} serverRouters 服务端返回的权限列表
+       * @param {} vm   vue实例
+       */
+      initMenu (state, obj){
+        // console.log(getFilterMenuList(routers, obj.serverRouters,state.mainMenuList[0]), obj.vm);
+        state.menuList = getFilterMenuList(routers, obj.serverRouters,state.mainMenuList[0], obj.vm);
       },
       initTag (state) {
         state.tagList = getTagListFromlocalStorage();
@@ -51,9 +62,6 @@ export default {
               state.tagList.remove(i);
             }
         });
-        console.log('==========')
-        console.log(state.tagList)
-
       },
       setMainMenu(state,seletedSystemObj){
         let arr = [];
@@ -74,8 +82,21 @@ export default {
             arr.push(o);
           }
         });
-        debugger
         state.menuList = arr;
+      },
+      setIframe (state, iframeObj) {
+        debugger
+        if(iframeObj.name && iframeObj.url){
+          state.iframeObj.showIframe = true;
+          state.iframeObj.name = iframeObj.name;
+          var isAdd = state.iframeObj.iframeList.some((o) => {
+            return o.name === iframeObj.name;
+          })
+          if(!isAdd) state.iframeObj.iframeList.push(iframeObj);
+          console.log(state.iframeObj)
+        }else{
+          state.iframeObj.showIframe = false;
+        }
       }
     },
     actions: {}

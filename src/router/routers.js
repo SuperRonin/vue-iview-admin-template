@@ -105,7 +105,7 @@ const routers = [
   },
   {
     path: '/backrule',
-    icon: 'ios-grid-view',
+    icon: '',
     name: 'backrule',
     // title: '三级菜单',
     component: Main,
@@ -114,7 +114,7 @@ const routers = [
             path: 'backrulefirst',
             title: '',
             name: 'backrule-first',
-            icon: 'edit',
+            icon: '',
             belongMenu: 'othermenu',
             subChildren: tripSubrouters
         },
@@ -122,7 +122,7 @@ const routers = [
             path: 'add',
             title: '',
             name: 'add',
-            icon: 'edit',
+            icon: '',
             belongMenu: 'othermenu',
             subChildren: speciaSubrouters
         },

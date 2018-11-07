@@ -63,9 +63,8 @@ export default {
         return {
 			titleOptions: {
                 text: '标题',
-                isicon: false,
-                imgname: 'logo.jpg',
-                width: 20
+                isicon: true,
+                imgname: 'ionic',
 			},
             headerButton:{
 				list: [ 

@@ -38,8 +38,13 @@
                         <!-- <tags-nav :value="$route" @input="handleClick" :list="tagNavList" @on-close="handleCloseTag"/> -->
                     </div>
                     <keep-alive>
-                        <router-view/>
+                        <router-view v-show="!iframeObj.showIframe"/>
                     </keep-alive>
+                    <div v-show="iframeObj.showIframe" class="iframe-content">
+                        <div v-for="item in iframeObj.iframeList" :key="item.name">    
+                            <iframe v-show="item.name == currentPageName" style="width:100%;height:800px;" :id="item.name" :ref="item.name" :src="item.url"  frameborder="0"></iframe>
+                        </div>
+                    </div>
                 </Content>
             </Layout>
         </Layout>
@@ -64,14 +69,15 @@ export default {
   data() {
     return {
       isCollapsed: false,
-      seletedSystem: {}
+      seletedSystem: {},
+      currentPageName: ""
     };
   },
   components: { user, leftmenu, topmenu, busBtn, busTable, tagsPageOpened },
   mounted() {
     this.$store.commit("initSystem", []);
     this.$store.commit("initMainMenu", []);
-    this.$store.commit("initMenu", []);
+    // this.$store.commit("initMenu", {serverRouters: [], vm: this});
     this.$store.commit("initTag", []);
     console.log(this.$store.state.app.systemList);
     this.seletedSystem = this.$store.state.app.systemList[0];
@@ -86,7 +92,9 @@ export default {
     menulist() {
       return this.$store.state.app.menulist;
     },
-    defaultSystem() {},
+    iframeObj() {
+      return this.$store.state.app.iframeObj
+    },
     rotateIcon() {
       return ["menu-icon", this.isCollapsed ? "rotate-icon" : ""];
     },
@@ -116,7 +124,23 @@ export default {
       });
       return obj;
     }
-  }
+  },
+    watch: {
+        '$route' (to) {
+            this.currentPageName = to.name;
+            // this.$nextTick(() => {
+            //     this.refsTag.forEach((item, index) => {
+            //         if (to.name === item.name) {
+            //             let tag = this.refsTag[index].$el;
+            //             this.moveToView(tag);
+            //         }
+            //     });
+            // });
+            // this.tagsCount = this.tagsList.length;
+
+            // return this.$store.state.app.tagList
+        }
+    }
 };
 </script>
 

@@ -1,6 +1,7 @@
 <template>
     <div class="padding-top-10">
         <Icon v-if="titleOptions.isicon" :type="titleOptions.imgname"></Icon>
+        <Icon type="ionic"></Icon>
         <img v-if="!titleOptions.isicon" :width="titleOptions.width" :src="imgsrc"/>
         <span class="default">{{titleOptions.text}}</span>
     </div>

@@ -10,27 +10,28 @@
             <Col span="24">
                 <div>
                     <Table
-                    :border="table.border"
-                    :size="table.size"
-                    :highlight-row="table.highlight" 
-                    :stripe="table.stripe"
+                    v-if="tableData.border"
+                    :border="tableData.border"
+                    :size="tableData.size"
+                    :highlight-row="tableData.highlight" 
+                    :stripe="tableData.stripe"
                     :height="height"
-                    :class="table.footeData.isHeader ? 'overscroll' : 'hidden'"
-                    :columns="table.columns"
-                    :data="table.data"
+                    :class="tableData.footeData.isHeader ? 'overscroll' : 'hidden'"
+                    :columns="tableData.columns"
+                    :data="tableData.data"
                     @on-select="selectRow"
                     @on-select-all="selectAllRow"
                     >
                     <div slot="footer">
                        <table>
-                            <thead v-if="table.footeData.isHeader">
+                            <thead v-if="tableData.footeData.isHeader">
                                 <tr>
-                                    <td width="100px" style="text-align: center;background: #eee;" v-for="item in table.footeData.colums" :key="item.index">{{item}}</td>
+                                    <td width="100px" style="text-align: center;background: #eee;" v-for="item in tableData.footeData.colums" :key="item.index">{{item}}</td>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td width="100px" style="text-align: center" v-for="item in table.footeData.data" :key="item.index">{{item}}</td>
+                                    <td width="100px" style="text-align: center" v-for="item in tableData.footeData.data" :key="item.index">{{item}}</td>
                                     <!-- <td width="60px" style="text-align: center">总计</td>
                                     <td width="78px" style="text-align: center">123</td>
                                     <td width="265px" style="text-align: center">456</td>
@@ -45,7 +46,7 @@
             </Col>
         </Row>
     
-        <Page :total="total" :show-sizer=table.showSizer :page-size="Number(pagesize)" show-total @on-page-size-change="onPageSize" @on-change="setInitPage" style="text-align:center;margin:30px 0"></Page>
+        <Page :total="total" :show-sizer=tableData.showSizer :page-size="Number(pagesize)" show-total @on-page-size-change="onPageSize" @on-change="setInitPage" style="text-align:center;margin:30px 0"></Page>
     </div>
 </template>
 <style scoped>
@@ -76,20 +77,21 @@ export default {
             current: 0,
             pagesize: 10,
             total: 0,
-            totalTableData: []
+            totalTableData: [],
+            tableData: {}
         };
     },
     created() {
        // 获取表格数据
        this.getTableData();
+       console.log(this.table)
     },
     methods: {
-        init (){
+        init (res){
             const that = this;
             that.totalTableData = res;
             that.table.data = res.slice(0,that.pagesize);
             that.total = res.length;
-            that.current = 1;
             const tableColumns = this.table.columns;
             tableColumns.forEach((o,i) => {
                 // 操作按钮
@@ -101,7 +103,9 @@ export default {
                 // 序号
                 if(o.type == "num"){
                     o["render"] =  (h, params) => {
-                        return h('span', params.index + (that.current - 1) * that.pagesize + 1);
+                        debugger
+                        return h('span', params.index + that.current * that.pagesize + 1);
+                        // return h('span', 1);
                     }
                 }
                 // 字典表
@@ -138,7 +142,8 @@ export default {
                 }
             })
             this.table.columns = tableColumns;
-           
+            debugger
+           this.tableData = this.table;
         },
         initButton(h,o,params){
             let ButtonArr = [];
@@ -161,11 +166,14 @@ export default {
             })
             return ButtonArr
         },
-        getTableData(){
+        getTableData(index){
             if(this.table.urltype === "get" || this.table.urltype === "post"){
                 const that = this;
                 const urltype = this.table.urltype;
-                that.$http[urltype](that.table.initUrl,{}).then((res) => {
+                const data = {
+                    page: index
+                }
+                that.$http[urltype](that.table.initUrl,{params: data}).then((res) => {
                     that.init(res);
                 })
                 .catch(function(error) {
@@ -186,11 +194,12 @@ export default {
             // }); 
         },
         setInitPage(index){
-            let startdata = ( index - 1 ) * this.pagesize;
-            let enddata = index * this.pagesize;
-            debugger
-            this.table.data = this.totalTableData.slice(startdata,enddata);
+        //     let startdata = ( index - 1 ) * this.pagesize;
+        //     let enddata = index * this.pagesize;
+        //     debugger
+        //     this.table.data = this.totalTableData.slice(startdata,enddata);
             this.current = index;
+            this.getTableData(index);
         },
         /**
          * @description 获取某一行数据
@@ -292,6 +301,7 @@ export default {
             if(urltype === "get" || urltype === "post"){
                 const that = this;
                 const urltype = this.table.urltype;
+                params["page"] = 0;
                 that.$http[urltype](url,{params: params}).then((res) => {
                     that.totalTableData = res;
                     that.table.data = res.slice(0,that.pagesize);

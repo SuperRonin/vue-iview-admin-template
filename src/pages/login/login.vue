@@ -29,6 +29,7 @@
 </template>
 
 <script>
+import authorityJson from "../../mock/authority.json"
 import Main from "../../components/main/main"
 export default {
   data() {
@@ -96,174 +97,10 @@ export default {
       //     ]
       //   }
       // ]);
-      this.$store.commit("initSystem", [
-        { id: "10", text: "供应系统", name: "SYS10", orderNo: null },
-        { id: "20", text: "分销系统", name: "SYS20", orderNo: null },
-        { id: "30", text: "系统管理1", name: "SYS30", orderNo: null }
-      ]);
-      this.$store.commit("initMainMenu", [
-        {
-          id: "20",
-          text: "旅游",
-          name: "PLAT20",
-          orderNo: 2,
-          belongMenu: "SYS10"
-        },
-        {
-          id: "30",
-          text: "定制客运",
-          name: "PLAT30",
-          orderNo: 3,
-          belongMenu: "SYS10"
-        }
-      ]);
-      this.$store.commit("initMenu", {serverRouters: [
-        {
-          title: "组件",
-          icon: "ios-arrow-forward",
-          name: "mainPage",
-          belongMenu: "PLAT20",
-          children: [
-            {
-              title: "button组件",
-              name: "buttonPage",
-              icon: "edit"
-            },
-            {
-              title: "filter组件",
-              name: "filterPage",
-              icon: "edit"
-            },
-            {
-              title: "table组件",
-              name: "tablePage",
-              icon: "edit"
-            }
-          ]
-        },
-        {
-          title: "组件2",
-          icon: "ios-arrow-forward",
-          name: "createpage",
-          belongMenu: "PLAT30",
-          children: [
-            {
-              title: "可视化页面1",
-              name: "createpageDemo1",
-              icon: "edit"
-            }
-          ]
-        },
-        {
-          title: "一级iframe",
-          icon: "ios-arrow-forward",
-          name: "iframe-test",
-          belongMenu: "PLAT20",
-          isFrame: "1",
-          children: [
-            {
-              name: "iframe-test-child",
-              title: "iframe子集标题",
-              belongMenu: "othermenu",
-              icon: "ios-pricetag-outline",
-              subChildren: [
-                {
-                  title: "子集标题下的菜单",
-                  name: "child-page",
-                  icon: "ios-pricetag-outline",
-                  belongMenu: "othermenu",
-                  url: "http://www.baidu.com",
-                  isFrame: "1",
-                }
-              ]
-            },
-            {
-              name: "iframe-test-child2",
-              title: "iframe子集标题2",
-              belongMenu: "othermenu",
-              icon: "ios-pricetag-outline",
-              subChildren: [
-                {
-                  title: "子集标题下的菜单2",
-                  name: "child-page2",
-                  icon: "ios-pricetag-outline",
-                  belongMenu: "othermenu",
-                  url: "http://www.baidu.com",
-                  isFrame: "1",
-                }
-              ]
-            }
-          ]
-        },
-        {
-          title: "一级iframe+1",
-          icon: "ios-arrow-forward",
-          name: "iframe-test-1",
-          url: "http://www.jd.com",
-          isFrame: "1",
-          belongMenu: "PLAT20"
-        },
-        {
-          name: "backrule", //三级菜单
-          title: "三级左侧菜单",
-          belongMenu: "PLAT30",
-          icon: "ios-arrow-forward",
-          children: [
-            {
-              name: "backrule-first",
-              title: "门票",
-              belongMenu: "othermenu",
-              icon: "ios-pricetag-outline",
-              subChildren: [
-                {
-                  title: "用户",
-                  name: "thirdroute-page",
-                  icon: "ios-pricetag-outline",
-                  belongMenu: "othermenu"
-                },
-                {
-                  title: "订票",
-                  name: "thirdroute-page1",
-                  icon: "edit",
-                  belongMenu: "othermenu"
-                },
-                {
-                  title: "订单列表",
-                  name: "thirdroute-page2",
-                  icon: "edit",
-                  belongMenu: "othermenu"
-                },
-              ]
-            },
-            {
-              name: "add",
-              title: "定制客运",
-              belongMenu: "othermenu",
-              icon: "ios-pricetag-outline",
-              subChildren: [
-                {
-                  title: "用户",
-                  name: "add",
-                  icon: "edit",
-                  belongMenu: "othermenu"
-                },
-                {
-                  title: "订票",
-                  name: "add1",
-                  icon: "edit",
-                  belongMenu: "othermenu"
-                },
-                {
-                  title: "订单列表",
-                  name: "add2",
-                  icon: "edit",
-                  belongMenu: "othermenu"
-                }
-              ]
-            }
-          ]
-        }
-      ],
+      this.$store.commit("initSystem", authorityJson.systemList);
+
+      this.$store.commit("initMainMenu", authorityJson.menuList);
+      this.$store.commit("initMenu", {serverRouters: authorityJson.serverRouters,
       vm: this
       });
       this.$store.commit("initTag");

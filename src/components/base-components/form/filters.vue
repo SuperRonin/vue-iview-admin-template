@@ -30,7 +30,7 @@
                             @on-clear="selectClear($event,item.fieldname)"
                             >
                                 <Option v-for="item in item.options" 
-                                :value="item.key"
+                                :value="item.value"
                                 :disabled="item.disabled" 
                                 :key="item.value"
                                 >

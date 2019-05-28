@@ -21,6 +21,7 @@
                     :data="tableData.data"
                     @on-select="selectRow"
                     @on-select-all="selectAllRow"
+                    @on-select-cancel="onSelectCancel"
                     >
                     <div slot="footer">
                        <table>
@@ -46,13 +47,13 @@
             </Col>
         </Row>
     
-        <Page :total="total" :show-sizer=tableData.showSizer :page-size="Number(pagesize)" show-total @on-page-size-change="onPageSize" @on-change="setInitPage" style="text-align:center;margin:30px 0"></Page>
+        <Page :total="total" ref="pages" :loading="loading" :show-sizer=tableData.showSizer :page-size="Number(pagesize)" show-total @on-page-size-change="onPageSize" @on-change="setInitPage" style="text-align:center;margin:30px 0"></Page>
     </div>
 </template>
 <style scoped>
     .item{
         display: inline;
-        margin-right:10px;  
+        margin-right:10px;
     }
     .item span{
         margin-right:5px;
@@ -78,43 +79,47 @@ export default {
             pagesize: 10,
             total: 0,
             totalTableData: [],
-            tableData: {}
+            tableData: {},
+            wordbook:['关闭','开启'],
+            loading: true
         };
     },
-    created() {
+    mounted() {
        // 获取表格数据
-       this.getTableData();
+       this.getTableData(1);
        console.log(this.table)
     },
     methods: {
         init (res){
             const that = this;
-            that.totalTableData = res;
-            that.table.data = res.slice(0,that.pagesize);
-            that.total = res.length;
-            const tableColumns = this.table.columns;
+            that.table.data = res.data.list;
+            that.total = res.data.total;
+            let tableColumns = that.table.columns;
+            that.table.data.forEach((o,i) => {
+                o.status = that.wordbook[o.status || 0];
+            })
             tableColumns.forEach((o,i) => {
-                // 操作按钮
-                if(o.key == 'handle'){
-                    o['render'] = (h, params) => {
-                            return h('div', this.initButton(h,o,params));
-                    }
-                }
                 // 序号
                 if(o.type == "num"){
                     o["render"] =  (h, params) => {
-                        debugger
+                        
                         return h('span', params.index + that.current * that.pagesize + 1);
                         // return h('span', 1);
                     }
                 }
-                // 字典表
-                if(o.wordbook instanceof Array){
-                    o["render"] =  (h, params) => {
-                        const type= params.row.type || 0;
-                        return h('span', o.wordbook[type]);
+               // 字典表
+                // if(o.wordbook instanceof Array){
+                //     o["render"] =  (h, params) => {
+                //         return h('span', o.wordbook[Number(that.table.data[i].status)]);
+                //     }
+                // }
+                // 操作按钮
+                if(o.key == 'handle'){
+                    o['render'] = (h, params) => {
+                            return h('div', that.initButton(h,o,params));
                     }
                 }
+                
                 // switch开关
                 if(o.switch){
                     o["render"] = (h, params) => {
@@ -142,7 +147,6 @@ export default {
                 }
             })
             this.table.columns = tableColumns;
-            debugger
            this.tableData = this.table;
         },
         initButton(h,o,params){
@@ -158,7 +162,6 @@ export default {
                         },
                         on: {
                             click: () => {
-                                debugger
                                 this.ontableButtonClick(v.value,params)
                             }
                         }
@@ -167,39 +170,34 @@ export default {
             return ButtonArr
         },
         getTableData(index){
+            this.loading = true;
             if(this.table.urltype === "get" || this.table.urltype === "post"){
                 const that = this;
                 const urltype = this.table.urltype;
                 const data = {
-                    page: index
+                    pageNo: index,
+                    pageSize: that.pagesize
                 }
                 that.$http[urltype](that.table.initUrl,{params: data}).then((res) => {
-                    that.init(res);
+                    if(res.code == "0000"){
+                        that.loading = false;
+                        that.current = 0;
+                        that.init(res);
+                    }
                 })
                 .catch(function(error) {
+                    that.loading = false;
                     that.$Message.error(error.message);
                 });
             }
-             
-            // that.$http.get(that.table.initUrl,{
-            //     params:{}
-            // }).then(function(res){
-            //     that.totalTableData = res;
-            //     that.table.data = res.slice(0,that.pagesize);
-            //     that.total = res.length;
-            //     that.current = 1;
-            // })
-            // .catch(function(error) {
-            //     that.$Message.error(error.message);
-            // }); 
         },
         setInitPage(index){
         //     let startdata = ( index - 1 ) * this.pagesize;
         //     let enddata = index * this.pagesize;
         //     debugger
         //     this.table.data = this.totalTableData.slice(startdata,enddata);
-            this.current = index;
-            this.getTableData(index);
+            this.current = index - 1;
+            this.$emit("onpageSize",{page: index});
         },
         /**
          * @description 获取某一行数据
@@ -231,12 +229,16 @@ export default {
             this.allSeletedRowData = selection;
             this.$emit("onSelectRow",this.allSeletedRowData,this.currentRowData);
         },
+        
         /**
          * @description 表格全选
          */
         selectAllRow(selection) {
             this.allSeletedRowData = selection;
             this.$emit("onSelectRow",this.allSeletedRowData);
+        },
+        onSelectCancel(selection,row){
+            this.allSeletedRowData = selection;
         },
         /**
          * @description 表格功能按钮点击
@@ -283,7 +285,6 @@ export default {
             let tablecolumns = this.table.columns;
                   tablecolumns = tablecolumns.slice(2,tablecolumns.length-1);
             tablecolumns.forEach((o,i) => {
-                console.log(params.row[o.value])
                 tableEditModalForm.push({
 						"label": o.title, //输入框前面的文字描述
 						"type": "input", //当前form的类型(input:输入框,select:下拉选择,date: 日历)
@@ -293,21 +294,25 @@ export default {
 						"fieldname": o.key //接口需要的字段名，注意修改的是key值  eg: fieldname: "startCity",
 					})
             })
-            console.log(tableEditModalForm)
             return tableEditModalForm
         },
         fullDataByurl(urltype,url,params) {
-            debugger
+            this.loading = true;
             if(urltype === "get" || urltype === "post"){
                 const that = this;
                 const urltype = this.table.urltype;
-                params["page"] = 0;
+                params["pageNo"] = params["pageNo"] || 1;
+                params["pageSize"] = this.pagesize;
+                debugger
+                this.$refs['pages'].currentPage = params["pageNo"] || 1;
                 that.$http[urltype](url,{params: params}).then((res) => {
-                    that.totalTableData = res;
-                    that.table.data = res.slice(0,that.pagesize);
-                    that.total = res.length;
+                    if(res.code == "0000"){
+                        that.loading = false;
+                        that.init(res);
+                    }
                 })
                 .catch(function(error) {
+                    that.loading = false;
                     that.$Message.error(error.message);
                 });
             }
@@ -322,8 +327,6 @@ export default {
     },
     computed: {
         height () {
-            // return document.body.clientHeight - 338  //无统计
-            
             return document.body.clientHeight - 360  //有统计
         }
     }
